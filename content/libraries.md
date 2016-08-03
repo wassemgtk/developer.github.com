@@ -15,7 +15,7 @@ many flavors</h1>
   <img src="/assets/images/gundamcat.png" class="gundamcat" alt="The Gundamcat" />
 </div>
 
-# Third-party libraries
+# Third-party libraries!!
 
 ## Android
 
