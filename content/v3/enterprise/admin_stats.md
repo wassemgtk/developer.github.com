@@ -2,7 +2,7 @@
 title: Admin Stats
 ---
 
-# Admin Stats
+# Admin Stats!
 
 {:toc}
 
