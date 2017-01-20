@@ -27,9 +27,6 @@ provides items in sets of 100
 [events](https://developer.github.com/v3/activity/events/) won't let you set a maximum for items to receive.
 Be sure to read the documentation on how to handle paginated results for specific endpoints.
 
-Information about pagination is provided in [the Link header](http://tools.ietf.org/html/rfc5988)
-of an API call. For example, let's make a curl request to the search API, to find
-out how many times Mozilla projects use the phrase `addClass`:
 
 ``` command-line
 $ curl -I "{{ site.data.variables.product.api_url_pre }}/search/code?q=addClass+user:mozilla"

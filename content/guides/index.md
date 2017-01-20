@@ -1,5 +1,5 @@
 ---
-title: Development Guides
+title: Development Guides!
 layout: guides
 ---
 
@@ -7,7 +7,10 @@ layout: guides
 
 This section of the documentation is intended to get you up-and-running with
 real-world {{ site.data.variables.product.product_name }} API applications. We'll cover everything you need to know, from
-authentication, to manipulating results, to combining results with other services.
+authentication.
+test
+test
+test
 
 Every tutorial here will have a project, and every project will be
 stored and documented in our public
