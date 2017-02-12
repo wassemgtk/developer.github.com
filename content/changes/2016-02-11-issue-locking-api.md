@@ -2,9 +2,6 @@
 title: Issue Locking and Unlocking API Preview Period
 author_name: davidcelis
 ---
-
-We're introducing new API methods to allow repository collaborators to [lock and unlock conversations][lock-an-issue]. Developers with [collaborator permissions][permissions] on a repository can start experimenting with these new endpoints today during the preview period.
-
 To lock a conversation, make a `PUT` request to the conversation's issue:
 
 ``` command-line
