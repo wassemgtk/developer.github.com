@@ -5,8 +5,6 @@ author_name: davidcelis
 
 We will soon begin introducing new `action` values for several existing webhook events. If you currently subscribe to webhooks but do not check the payload's `action` value, you may end up incorrectly processing events after this change is released. To ensure that your webhook processing is not affected by these new `action` values, **you should audit your webhook processing logic by April 15th, 2016**.
 
-We are providing an advance notice to warn of these changes. In the future, we may continue adding new actions without providing further warning.
-
 ### A brief overview of GitHub webhook actions
 
 Webhook events can have multiple actions. For example, the [`IssuesEvent`](https://developer.github.com/v3/activity/events/types/#issuesevent) has several possible actions. These include `opened` when the issue is created, `closed` when the issue is closed, and `assigned` when the issue is assigned to someone. Historically, we haven't added new actions to webhook events that have only one action. However, as GitHub's feature set grows, we may occasionally add new actions to existing event types. We encourage you to take some time and ensure that your application explicitly checks the action before doing any processing.
