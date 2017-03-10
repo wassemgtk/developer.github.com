@@ -1,51 +1,60 @@
 ---
-タイトル：新しいウェブフックイベントアクションが来ています
-AUTHOR_NAME：davidcelis
+タイトル：リリースAPI
+AUTHOR_NAME：technoweenie
 ---
 
-私たちは、すぐにいくつかの既存のウェブフックイベントのための新しい `action`値を導入開始します。あなたが現在ウェブフックに加入したが、ペイロードの `action`値をチェックしない場合は、この変更がリリースされた後に、誤ってイベントを処理するに終わる可能性があります。あなたのウェブフック処理は、これらの新しい `action`値によって影響されないことを確実にするために、**は** 4月15日、2016年までにあなたのウェブフック処理ロジックを監査する必要があります。
+このAPIは、バイナリ資産による少し異なっています。要求するときに私たちは、コンテンツネゴシエーションのため、 `Accept`ヘッダーを使用します
+リリース資産。 API表現を取得するための標準APIのメディアタイプを渡します。
 
-###のGitHubウェブフックアクションの概要
+`` `コマンドライン
+$ -i -H '認可：トークン5199831f4dd3b79e7c5b7e0ebe75d67aa66e79d4」をカール\
+-H「同意する：アプリケーション/ application/vnd.github.manifold-previewキー・プレビュー」
+$ "https://uploads.github.com/repos/hubot/singularity/releases/assets/123」
 
-ウェブフックイベントは、複数のアクションを持つことができます。例えば、（https://developer.github.com/v3/activity/events/types/#issuesevent）いくつかの可能なアクションがあります。[`IssuesEvent`]これらは `問題が作成されopened`、`問題がクローズされclosed`、そして問題が誰かに割り当てられている `assigned`が含まれます。歴史的に、我々は1つのアクションだけを持つイベントをウェブフックする新しいアクションを追加していません。 GitHubのの機能セットが成長するにつれてしかし、我々は時折、既存のイベントタイプに新しいアクションを追加することができます。我々はいくつかの時間がかかるし、あなたのアプリケーションが明示的に任意の処理を実行する前にアクションをチェックしていることを確認することをお勧めします。
+> HTTP /1.1 200 OK
 
-イベントアクションで作業するとき###何を避けるために、
-
-ここでは `IssuesEvent`を処理しようとしたとき** **動作しません機能の例です。この例では、 `process_closed`方法は、` opened`または `assigned`ではない任意のイベントアクションのために呼び出されます。これは、 `process_closed`メソッドが` closed`アクションだけでなく、 `opened`またはウェブフックに配信されます` assigned`以外のアクションを持つ他のイベントとのイベントに対して呼び出されることを意味します。
-
-`` `ルビー
-＃以下は、将来性はありません！
-ケースアクション
-「開かれた」とき
-Process_opened
-ときに「割り当てられました」
-Process_assigned
-ほかに
-Process_closed
-終わり
+> {
+> "ID"： 123,、
+>   ...
+> }
 ```
 
-###新しいイベント・アクションの操作方法
+バイナリコンテンツをダウンロードするには、 "application / octet-stream」を渡します。
 
-私たちは、あなたが明示的にイベントアクションを確認し、それに従って行動することを示唆しています。この例では、 `closed`アクションは` process_closed`メソッドを呼び出す前に、最初にチェックされています。さらに、未知の行動のために、私たちは何か新しいものが発生したことログインします。
+`` `コマンドライン
+$ -i -H '認可：トークン5199831f4dd3b79e7c5b7e0ebe75d67aa66e79d4」をカール\
+$ -H「同意する：application / octet-stream」を\
+$ "https://uploads.github.com/repos/hubot/singularity/releases/assets/123」
 
-`` `ルビー
-＃以下を推奨します
-ケースアクション
-「開かれた」とき
-Process_opened
-ときに「割り当てられました」
-Process_assigned
-時「閉」
-Process_closed
-ほかに
-「GitHubのから、Ooohh新しい何かを！」置きます
-終わり
+HTTP /1.1 302見つけました
 ```
 
-また、随時新しいウェブフックイベントタイプを追加することもできます。あなたのウェブフックが "** **すべてのものを私に送信する」ように設定されている場合、あなたのコードはまた、明示的に、我々は上記のアクション・タイプをチェックして行っているのと同様の方法で、イベントタイプをチェックする必要があります。より多くのヒントについては、私たちを見てみましょう。 [best-practices] [integrators best practices guide]
+アップロードはコンパニオン「uploads.github.com」サービスへの単一の要求によって処理されます。
 
-ご質問やご意見がありましたら、お願いします。 [get in touch] [get-in-touch]
+`` `コマンドライン
+$カール-H「認可：トークンのOAuth-TOKEN」
+-H「同意する：アプリケーション/ application/vnd.github.manifold-previewキー・プレビュー」
+-H "のContent-Type：アプリケーション/ ZIP" \
+--data-バイナリ@ビルド/ MAC / package.zip \
+「https://uploads.github.com/repos/hubot/singularity/releases/123/assets?name=1.0.0-mac.zip "
+```
 
-[best-practices]: https://developer.github.com/guides/best-practices-for-integrators/
-[get-in-touch] ：https://github.com/contact?form =新規+ウェブフック+アクション [subject]
+##プレビューモード
+
+新しいAPIは、利用可能です。これは、の方向に開発者にチャンスを与えます [preview] [preview] [provide feedback] [contact]
+我々は変更を凍結する前にAPI。私たちは、30日のプレビュー状態を持ち上げることを期待しています。
+
+同じように、我々はすぐに反復するこの機会を取りますよ。重大な変更が発表されます [the Search API] [searchapi]
+任意の事前の警告なしに、この開発者のブログで。プレビュー期間が終了すると、我々はリリースAPIは不変検討します。
+その時点で、それは安定した生産使用のために適しています。
+
+プレビューメディアタイプが「アプリケーション/ vnd.github.manifoldプレビュー」です。 （http://en.wikipedia.org/wiki/Eden_Fesi）であります [Manifold]
+時間と空間を介してテレポートする能力を持つアベンジャーズのメンバー、。彼は槍を保持している途中で一つです。
+
+！ [Manifold teleporting the Avengers to a terraformed Mars surface] （https://f.cloud.github.com/assets/21/1210628/ae8556fa-25fc-11e3-986d-0ab522271d43.png）
+
+[blawg] ：https://github.com/blog/1547-release-your-software
+[api] ：http://developer.github.com/v3/repos/releases/
+[preview] ：http://developer.github.com/v3/repos/releases/#preview-mode
+[searchapi] ：http://developer.github.com/changes/2013-07-19-preview-the-new-search-api/
+[contact] ：https://github.com/contact?form =新規+リリース+ [subject] API
