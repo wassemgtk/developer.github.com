@@ -20,7 +20,7 @@ GET / [組織/：ORG
 
 `NAME` |` type`が|説明。
 --------|---------|--------------
-`filter` |` STRING` |フィルタのメンバーがリストに戻りました。有効にすることなく、メンバー：* `2fa_disabled`：のいずれかになります。組織の所有者のために利用できます。 * `ALL`：認証されたユーザが見ることができるすべてのメンバー。デフォルト： `ALL` <br/> [two-factor authentication] <br/> <br/> <br/> [2fa-blog]
+`filter` |` STRING`<br/> |フィルタのメンバーがリストに戻りました。有効にすることなく、メンバー：* `2fa_disabled`：のいずれか<br/>になります。組織の所有者のために利用できます。 * `ALL`：認証されたユーザが見ることができるすべてのメンバー。デフォルト： `ALL`  [two-factor authentication]  <br/> <br/> [2fa-blog]
 `role` |` STRING` |フィルタのメンバーは彼らの役割によって返されました。 * `ALL`：組織のすべてのメンバーに関係なく、役割ののいずれかになります。 * `admin`：組織の所有者。 * `member`：非所有者団体のメンバー。このオプションは、指定するカスタムメディアタイプが必要です。 。以下の警告で詳細を参照してください。**デフォルト： `ALL` <br/> {% if page.version != 'dotcom' and page.version == 2.4 %} <br/> {% endif %} <br/> <br/> <br/>
 
 [1614-two-factor-authentication] ！ （https://github.com/blog/1614-two-factor-authentication）
