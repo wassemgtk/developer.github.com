@@ -3,10 +3,6 @@ title: Releases API is Official
 author_name: technoweenie
 ---
 
-Hot on the heels of the [Search API][search-api], the [Releases API][releases-api]
-is now officially part of GitHub API v3.  We now consider it stable for
-production use.
-
 ### Preview Media Type No Longer Needed
 
 If you used the Releases API during the preview period, you needed to provide a custom media type in the `Accept` header:
