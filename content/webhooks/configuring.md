@@ -7,8 +7,6 @@ layout: webhooks
 
 {:toc}
 
-Now that our webhook is ready to deliver messages, we'll set up a basic Sinatra server
-to handle incoming payloads.
 
 Recall that we specifically set our webhook URL to `http://localhost:4567/payload`.
 Since we're developing locally, we'll need to expose our local development environment
