@@ -13,11 +13,6 @@ In order to better isolate your content from potentially malicious content uploa
 
 This change affects the following subdomains:
 
-* **raw.github.com** : Serves raw file content from your repository.
-* **embed.github.com** : Allows users to embed rich GitHub content on other sites.
-* **render.github.com** : Displays rich content on GitHub.com.
-* **f.cloud.github.com** : Hosts all those amazing gifs you use in Pull Requests and Issues.
-
 Content formerly served by these subdomains is now served from subdomains of **githubusercontent.com**.
 
 ## Older links
