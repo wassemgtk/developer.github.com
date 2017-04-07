@@ -16,8 +16,6 @@ and use in its place. This new method provides a safe way to reset user
 authorizations without requiring users to re-authorize the application on the
 web.
 
-Integrators can also use the existing revocation methods to ~~revoke all
-tokens~~ or [revoke a single token][] for their applications.
 
 {{#tip}}
 
