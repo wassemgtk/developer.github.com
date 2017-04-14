@@ -4,14 +4,6 @@ author_name: davidcelis
 ---
 To lock a conversation, make a `PUT` request to the conversation's issue:
 
-``` command-line
-$ curl "https://api.github.com/repos/github/hubot/issues/1/lock" \
-  -X PUT \
-  -H "Authorization: token $TOKEN" \
-  -H "Content-Length: 0" \
-  -H "Accept: application/vnd.github.the-key-preview"
-```
-
 To unlock a conversation, make a similarly constructed `DELETE` request:
 
 ``` command-line
