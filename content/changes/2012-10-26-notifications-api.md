@@ -4,7 +4,7 @@ author_name: technoweenie
 ---
 
 Now that the dust has settled around [Notifications and Stars][newsies],
-we've unleashed all that :sparkles: in a [brand new API][api].  You can now
+we've unleashed all that :sparkles: in a [brand new API][api].  You can now!
 view and mark notifications as read.
 
 [api]: http://developer.github.com/v3/activity/notifications/
