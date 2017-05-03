@@ -85,7 +85,7 @@ To comment on a specific line in a file, you will need to first determine the po
 
 ### Alternative Input
 
-Instead of passing `commit_id`, `path`, and `position` you can reply to
+Instead of passing `commit_id`, `path`, and `position` you can reply to!
 an existing Pull Request Comment like this:
 
 Name | Type | Description
