@@ -1,12 +1,21 @@
 ---
-Title：ステータスAPIの制限
-著者名：rsanheim
+Title：ユーザーペイロードからGravatar IDを削除する
+著者名：mastahyeti
 ---
 
-すべてのAPIコンシ[statuses]ューマーに高いレベルのサービスを提供す間もなく
-コミットSHA、リポジトリ、およびコンテキストごとに1000までです。
+[gravatar_id`属性は非推奨になりました
+表現]（https://developer.github.com/v3/users/）。 9月19日から、
+APIは常にこの属性の値として空の文字列を提供します11。
 
-11月3日の月曜日から、この制限を超える既存のデータセットを削除し、最も古いデータセットを削除します
-最初に記録する。その制限を超えてステータスを作成しようとすると、a。 [validation error]
+ユーザーはGitHubにアバターを直接アップロードすることができました
+今]（https://github.com/blog/1803-switch-your-picture-with-ease）。ユーザー
+アバターをアップロードしていない、私たちはまだGravatarから1つを取得しようとしますが、
+GitHubのサーバー上で発生します。その結果、 `gravatar_id`
+属性はもはやGitHubユーザの正規のアバターを識別しない。代わりに、API
+消費者は `avatar_url`を使用してユーザーのアバターを取得する必要があります。 `avatar_url`
+属性は常に（/ v3 / users /）に存在しています [v3 user representation]
+GitHubユーザーのアバターを見つけるための唯一の信頼できる方法です。
 
-ご意見やご質問がございましたら、私たちにご相談ください。 [contact]
+ご質問やご意見があり[contact]ましたら、お願いします。 [get drop us a line]
+
+[contact] ：https://github.com/contact?form = [subject] Gravatar + IDを削除する
