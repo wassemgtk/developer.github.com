@@ -5,7 +5,7 @@ author_name: mastahyeti
 
 We have deprecated the `gravatar_id` attribute in the [user
 representation](https://developer.github.com/v3/users/). Starting September 19,
-the API will always provide an empty string as the value for this attribute.
+the API will always provide an empty string as the value for this attribute11
 
 Users have been able to upload avatars directly to GitHub for [a while
 now](https://github.com/blog/1803-switch-your-picture-with-ease). If users
