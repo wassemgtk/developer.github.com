@@ -1,154 +1,370 @@
 ---
-title: Using SSH Agent Forwarding
+title: Rendering Data as Graphs
 ---
 
 
 {:toc}
 
-SSH agent forwarding can be used to make deploying to a server simple.  It allows you to use your local SSH keys instead of leaving keys (without passphrases!) sitting on your server.
+In this guide, we're going to use the API to fetch information about repositories
+that we own, and the programming languages that make them up. Then, we'll
+Visualize that information in a couple of different ways using the [D3.js] [D3.js] library. To
+Interact  with the  API, we'll be {{ site.data.variables.product.product_name }} using the [Octokit] excellent Ruby library, .  [Octokit]
 
-If you've already set up an SSH key to interact with {{ site.data.variables.product.product_name }} , you're probably familiar with `ssh-agent`. It's a program that runs in the background and keeps your key loaded into memory, so that you don't need to enter your passphrase every time you need to use the key. The nifty thing is, you can choose to let servers access your local `ssh-agent` as if they were already running on the server. This is sort of like asking a friend to enter their password so that you can use their computer.
+If you haven't already, you should read the ["Basics of Authentication"] [basics-of-authentication]
+Guide before starting this example. You can find the complete source code for this project in the [platform-samples] [platform samples] repository.
 
-Check out [Steve Friedl's Tech Tips guide] [tech-tips] for a more detailed explanation of SSH agent forwarding.
+Let's jump right in!
 
-## Setting up SSH agent forwarding
+## Setting up an OAuth application
 
-Ensure that your own SSH key is set up and working. You can use [our guide on generating SSH keys] [generating-keys] if you've not done this yet.
+First, [register a new application] [new oauth application] on . {{ site.data.variables.product.product_name }} Set the main and callback
+URLs to `http://localhost:4567/`. As [before] [basics-of-authentication] , we're going to handle authentication for the API by
+Implementing a Rack middleware using [sinatra-auth-github] [sinatra auth github] :
 
-You can test that your local key works by entering `ssh -T git@github.com` in the terminal:
+``` ruby
+require 'sinatra/auth/github'
 
-``` command-line
-$ ssh -T git@github.com
-# Attempt to SSH in to github
-> Hi <em> username </em> ! You've successfully authenticated, but GitHub does not provide
-> shell access.
+module Example
+class MyGraphApp < Sinatra::Base
+# !!! DO NOT EVER USE HARD-CODED VALUES IN A REAL APP !!!
+# Instead, set and test environment variables, like below
+# if ENV ['GITHUB_CLIENT_ID'] && ENV ['GITHUB_CLIENT_SECRET']
+# CLIENT_ID = ENV ['GITHUB_CLIENT_ID']
+# CLIENT_SECRET = ENV ['GITHUB_CLIENT_SECRET']
+# end
+
+CLIENT_ID = ENV ['GH_GRAPH_CLIENT_ID']
+CLIENT_SECRET = ENV ['GH_GRAPH_SECRET_ID']
+
+enable :sessions
+
+set :github_options, {
+:scopes    => "repo",
+:secret    => CLIENT_SECRET,
+:client_id => CLIENT_ID,
+:callback_url => "/"
+}
+
+register Sinatra::Auth::Github
+
+get '/' do
+if !authenticated?
+authenticate!
+else
+Access_token = github_user ["token"]
+end
+end
+end
+end
 ```
 
-We're off to a great start. Let's set up SSH to allow agent forwarding to your server.
+Set up a similar _config.ru_ file as in the previous example:
 
-1. Using your favorite text editor, open up the file at `~/.ssh/config`. If this file doesn't exist, you can create it by entering `touch ~/.ssh/config` in the terminal.
+``` ruby
+ENV ['RACK_ENV'] ||= 'development'
+require "rubygems"
+require "bundler/setup"
 
-2. Enter the following text into the file, replacing `example.com` with your server's domain name or IP:
+Require File.expand_path(File.join(File.dirname( __FILE__ ), 'server'))
 
-Host example.com
-ForwardAgent yes
-
-{{#warning}}
-
-**Warning:** You may be tempted to use a wildcard like `Host *` to just apply this setting to all SSH connections. That's not really a good idea, as you'd be sharing your local SSH keys with *every* server you SSH into. They won't have direct access to the keys, but they will be able to use them *as you* while the connection is established. **You should only add servers you trust and that you intend to use with agent forwarding.**
-
-{{/warning}}
-
-## Testing SSH agent forwarding
-
-To test that agent forwarding is working with your server, you can SSH into your server and run `ssh -T git@github.com` once more.  If all is well, you'll get back the same prompt as you did locally.
-
-If you're unsure if your local key is being used, you can also inspect the `SSH_AUTH_SOCK` variable on your server:
-
-``` command-line
-$ echo " $S SH_AUTH_SOCK"
-# Print out the SSH_AUTH_SOCK variable
-> /tmp/ssh-4hNGMk8AZX/agent.79453
+run Example::MyGraphApp
 ```
 
-If the variable is not set, it means that agent forwarding is not working:
+## Fetching repository information
 
-``` command-line
-$ echo " $S SH_AUTH_SOCK"
-# Print out the SSH_AUTH_SOCK variable
-> <em>[No output]</em>
-$ ssh -T git@github.com
-# Try to SSH to github
-> Permission denied (publickey).
+This time, in order to talk to the {{ site.data.variables.product.product_name }} API, we're going to use the [Octokit
+Ruby library] [Octokit] . This is much easier than directly making a bunch of
+REST calls. Plus, Octokit was developed by a GitHubber, and is actively maintained,
+so you know it'll work.
+
+Authentication with the API via Octokit is easy. Just pass your login
+and token to the `Octokit::Client` constructor:
+
+``` ruby
+if !authenticated?
+authenticate!
+else
+octokit_client = Octokit::Client.new(:login => github_user.login, :oauth_token => github_user.token)
+end
 ```
 
-## Troubleshooting SSH agent forwarding
+Let's do something interesting with the data about our repositories. We're going
+to see the different programming languages they use, and count which ones are used
+most often. To do that, we'll first need a list of our repositories from the API.
+With Octokit, that looks like this:
 
-Here are some things to look out for when troubleshooting SSH agent forwarding.
-
-### You must be using an SSH URL to check out code
-
-SSH forwarding only works with SSH URLs, not HTTP(s) URLs. Check the *.git/config* file on your server and ensure the URL is an SSH-style URL like below:
-
-``` command-line
-[remote "origin"]
-Url = git@github.com: <em> yourAccount </em> / <em> yourProject </em> .git
-fetch = +refs/heads/*:refs/remotes/origin/*
+``` ruby
+repos = client.repositories
 ```
 
-### Your SSH keys must work locally
+Next, we'll iterate over each repository, and count the language that {{ site.data.variables.product.product_name }}
+associates with it:
 
-Before you can make your keys work through agent forwarding, they must work locally first. [Our guide on generating SSH keys] [generating-keys] can help you set up your SSH keys locally.
+``` ruby
+Language_obj = {}
+repos.each do |repo|
+# sometimes language can be nil
+if repo.language
+If !language_obj [repo.language]
+Language_obj [repo.language] = 1
+else
+Language_obj [repo.language] += 1
+end
+end
+end
 
-### Your system must allow SSH agent forwarding
-
-Sometimes, system configurations disallow SSH agent forwarding. You can check if a system configuration file is being used by entering the following command in the terminal:
-
-``` command-line
-$ ssh -v <em> example.com </em>
-# Connect to example.com with verbose debug output
-> OpenSSH_5.6p1, OpenSSL 0.9.8r 8 Feb 2011 </span>
-> debug1: Reading configuration data /Users/ <em> you </em> /.ssh/config
-> debug1: Applying options for example.com
-> debug1: Reading configuration data /etc/ssh_config
-> debug1: Applying options for *
-$ exit
-# Returns to your local command prompt
+languages.to_s
 ```
 
-In the example above, the file *~/.ssh/config* is loaded first, then */etc/ssh_config* is read.  We can inspect that file to see if it's overriding our options by running the following commands:
+When you restart your server, your web page should display something
+that looks like this:
 
-``` command-line
-$ cat /etc/ssh_config
-# Print out the /etc/ssh_config file
-> Host *
->   SendEnv LANG LC_*
->   ForwardAgent no
+``` ruby
+{"JavaScript"=>13, "PHP"=>1, "Perl"=>1, "CoffeeScript"=>2, "Python"=>1, "Java"=>3, "Ruby"=>3, "Go"=>1, "C++"=>1}
 ```
 
-In this example, our */etc/ssh_config* file specifically says `ForwardAgent no`, which is a way to block agent forwarding. Deleting this line from the file should get agent forwarding working once more.
+So far, so good, but not very human-friendly. A visualization
+would be great in helping us understand how these language counts are distributed. Let's feed
+our counts into D3 to get a neat bar graph representing the popularity of the languages we use.
 
-### Your server must allow SSH agent forwarding on inbound connections
+## Visualizing language counts
 
-Agent forwarding may also be blocked on your server. You can check that agent forwarding is permitted by SSHing into the server and running `sshd_config`. The output from this command should indicate that `AllowAgentForwarding` is set.
+D3.js, or just D3, is a comprehensive library for creating many kinds of charts, graphs, and interactive visualizations.
+Using D3 in detail is beyond the scope of this guide, but for a good introductory article,
+Check out ["D3 for Mortals"] [D3 mortals] .
 
-### Your local `ssh-agent` must be running
+D3 is a JavaScript library, and likes working with data as arrays. So, let's convert our Ruby hash into
+a JSON array for use by JavaScript in the browser.
 
-On most computers, the operating system automatically launches `ssh-agent` for you. On Windows, however, you need to do this manually. We [a guide on how to start `ssh-agent` whenever you open Git Bash] [autolaunch-ssh-agent] have .
+``` ruby
+Languages = []
+language_obj.each do |lang, count|
+languages.push :language => lang, :count => count
+end
 
-To verify that `ssh-agent` is running on your computer, type the following command in the terminal:
-
-``` command-line
-$ echo " $S SH_AUTH_SOCK"
-# Print out the SSH_AUTH_SOCK variable
-> /tmp/launch-kNSlgU/Listeners
+Erb :lang_freq, :locals => { :languages => languages.to_json}
 ```
 
-### Your key must be available to `ssh-agent`
+We're simply iterating over each key-value pair in our object and pushing them into
+a new array. The reason we didn't do this earlier is because we didn't want to iterate
+over our `language_obj` object while we were creating it.
 
-You can check that your key is visible to `ssh-agent` by running the following command:
+Now, _lang_freq.erb_ is going to need some JavaScript to support rendering a bar graph.
+For now, you can just use the code provided here, and refer to the resources linked above
+if you want to learn more about how D3 works:
 
-``` command-line
-ssh-add -L
+``` html
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.0.1/d3.v3.min.js"></script>
+<style>
+svg {
+padding: 20px;
+}
+rect {
+fill: #2d578b
+}
+text {
+fill: white;
+}
+text.yAxis {
+font-size: 12px;
+font-family: Helvetica, sans-serif;
+fill: black;
+}
+</style>
+</head>
+<body>
+<p> Check this sweet data out: </p>
+<div id="lang_freq"></div>
+
+</body>
+<script>
+var data = <%= languages %>;
+
+var barWidth = 40;
+var width = (barWidth + 10) * data.length;
+var height = 300;
+
+Var x = d3.scale.linear().domain( [0, data.length] ).range( [0, width] );
+Var y = d3.scale.linear().domain( [0, d3.max(data, function(datum) { return datum.count; })] ).
+RangeRound( [0, height] );
+
+// add the canvas to the DOM
+var languageBars = d3.select("#lang_freq").
+append("svg:svg").
+attr("width", width).
+attr("height", height);
+
+languageBars.selectAll("rect").
+data(data).
+enter().
+append("svg:rect").
+Attr("x", function(datum, index) { return x(index); } ).
+Attr("y", function(datum) { return height - y(datum.count); } ).
+Attr("height", function(datum) { return y(datum.count); } ).
+attr("width", barWidth);
+
+languageBars.selectAll("text").
+data(data).
+enter().
+append("svg:text").
+Attr("x", function(datum, index) { return x(index) + barWidth; } ).
+Attr("y", function(datum) { return height - y(datum.count); } ).
+attr("dx", -barWidth/2).
+attr("dy", "1.2em").
+attr("text-anchor", "middle").
+Text(function(datum) { return datum.count;} );
+
+languageBars.selectAll("text.yAxis").
+data(data).
+enter().append("svg:text").
+Attr("x", function(datum, index) { return x(index) + barWidth; } ).
+attr("y", height).
+attr("dx", -barWidth/2).
+attr("text-anchor", "middle").
+Text(function(datum) { return datum.language;} ).
+attr("transform", "translate(0, 18)").
+attr("class", "yAxis");
+</script>
+</html>
 ```
 
-If the command says that no identity is available, you'll need to add your key:
+Phew! Again, don't worry about what most of this code is doing. The relevant part
+here is a line way at the top--`var data = <%= languages %>;`--which indicates
+that we're passing our previously created `languages` array into ERB for manipulation.
 
-``` command-line
-$ ssh-add <em> yourkey </em>
+As the "D3 for Mortals" guide suggests, this isn't necessarily the best use of
+D3. But it does serve to illustrate how you can use the library, along with Octokit,
+to make some really amazing things.
+
+## Combining different API calls
+
+Now it's time for a confession: the `language` attribute within repositories
+only identifies the "primary" language defined. That means that if you have
+a repository that combines several languages, the one with the most bytes of code
+is considered to be the primary language.
+
+Let's combine a few API calls to get a _true_ representation of which language
+Has the greatest number of bytes written across all our code. A [treemap] [D3 treemap]
+should be a great way to visualize the sizes of our coding languages used, rather
+than simply the count. We'll need to construct an array of objects that looks
+something like this:
+
+``` json
+[ { "name": "language1", "size": 100},
+{ "name": "language2", "size": 23}
+...
+]
 ```
 
-{{#tip}}
+Since we already have a list of repositories above, let's inspect each one, and
+Call [the language listing API method] [language API] :
 
-On Mac OS X, `ssh-agent` will "forget" this key, once it gets restarted during reboots. But you can import your SSH keys into Keychain using this command:
-
-``` command-line
-$ /usr/bin/ssh-add -K <em> yourkey </em>
+``` ruby
+repos.each do |repo|
+repo_name = repo.name
+Repo_langs = octokit_client.languages("# {github_user.login} /# {repo_name} ")
+end
 ```
 
-{{/tip}}
+From there, we'll cumulatively add each language found to a "master list":
 
-[tech-tips]: http://www.unixwiz.net/techtips/ssh-agent-forwarding.html
-[generating-keys]: https://help.github.com/articles/generating-ssh-keys
-[ssh-passphrases]: https://help.github.com/ssh-key-passphrases/
-[autolaunch-ssh-agent]: https://help.github.com/articles/working-with-ssh-key-passphrases#auto-launching-ssh-agent-on-msysgit
+``` ruby
+repo_langs.each do |lang, count|
+If !language_obj [lang]
+Language_obj [lang] = count
+else
+Language_obj [lang] += count
+end
+end
+```
+
+After that, we'll format the contents into a structure that D3 understands:
+
+``` ruby
+language_obj.each do |lang, count|
+Language_byte_count.push :name => "# {lang} (# )", {count} :count => count
+end
+
+# some mandatory formatting for D3
+Language_bytes = [ :name => "language_bytes", :elements => language_byte_count]
+```
+
+(For more information on D3 tree map magic, check out [this simple tutorial] [language API] .)
+
+To wrap up, we pass this JSON information over to the same ERB template:
+
+``` ruby
+Erb :lang_freq, :locals => { :languages => languages.to_json, :language_byte_count => language_bytes.to_json}
+```
+
+Like before, here's a bunch of JavaScript that you can drop
+directly into your template:
+
+``` html
+<div id="byte_freq"></div>
+<script>
+var language_bytes = <%= language_byte_count %>
+Var childrenFunction = function(d) {return d.elements} ;
+Var sizeFunction = function(d) {return d.count;} ;
+Var colorFunction = function(d) {return Math.floor(Math.random()*20)} ;
+Var nameFunction = function(d) {return d.name;} ;
+
+var color = d3.scale.linear()
+.domain( [0,10,15,20] )
+.range( ["grey","green","yellow","red"] );
+
+drawTreemap(5000, 2000, '#byte_freq', language_bytes, childrenFunction, nameFunction, sizeFunction, colorFunction, color);
+
+function drawTreemap(height,width,elementSelector,language_bytes,childrenFunction,nameFunction,sizeFunction,colorFunction,colorScale){
+
+var treemap = d3.layout.treemap()
+.children(childrenFunction)
+.size( [width,height] )
+.value(sizeFunction);
+
+var div = d3.select(elementSelector)
+.append("div")
+.style("position","relative")
+.style("width",width + "px")
+.style("height",height + "px");
+
+div.data(language_bytes).selectAll("div")
+.data(function(d) {return treemap.nodes(d);} )
+.enter()
+.append("div")
+.attr("class","cell")
+.style("background",function(d) { return colorScale(colorFunction(d));} )
+.call(cell)
+.text(nameFunction);
+}
+
+function cell(){
+this
+.style("left",function(d) {return d.x + "px";} )
+.style("top",function(d) {return d.y + "px";} )
+.style("width",function(d) {return d.dx - 1 + "px";} )
+.style("height",function(d) {return d.dy - 1 + "px";} );
+}
+</script>
+```
+
+Et voila! Beautiful rectangles containing your repo languages, with relative
+proportions that are easy to see at a glance. You might need to
+tweak the height and width of your treemap, passed as the first two
+arguments to `drawTreemap` above, to get all the information to show up properly.
+
+
+[D3.js] : http://d3js.org/
+[basics-of-authentication] : ../basics-of-authentication/
+[sinatra auth github]: https://github.com/atmos/sinatra_auth_github
+[Octokit]: https://github.com/octokit/octokit.rb
+[D3-for-mere-mortals/ mortals] : http://www.recursion.org/d3-for-mere-mortals/
+[D4063582 treemap] : http://bl.ocks.org/mbostock/4063582
+[language API] : https://developer.github.com/v3/repos/#list-languages
+[simple tree map] : http://2kittymafiasoftware.blogspot.com/2011/09/simple-treemap-visualization-with-d3.html
+[platform samples]: https://github.com/github/platform-samples/tree/master/api/ruby/rendering-data-as-graphs
+[new oauth application]: https://github.com/settings/applications/new

@@ -1,154 +1,370 @@
 ---
-：/ガイド/使用して、ssh-agentの転送/
+タイトル：グラフなどのデータをレンダリング
 ---
 
 
 {:toc}
 
-SSHエージェント転送は、サーバ簡単に展開するために使用することができます。それはあなたが代わりに鍵を残してのローカルのSSHキーを使用することができます（パスフレーズなし！）あなたのサーバー上に座って。
+このガイドでは、リポジトリについての情報を取得するためにAPIを使用するつもりです
+我々が所有していること、およびそれらを構成するプログラミング言語。その後、我々はよ
+ライブラリを使用して、いくつかの方法でその情報を視覚化します。に [D3.js] [D3.js]
+APIと対話し、私たちは、優れたRubyのライブラリを使うことになるでしょう。 {{ site.data.variables.product.product_name }} [Octokit] [Octokit]
 
-すでにと対話するためのSSHキーを設定している場合は、おそらく `sshを-agent`に精通しています。{{ site.data.variables.product.product_name }}これは、バックグラウンドで実行され、パスフレーズキーを使用する必要がある たびに入力する必要がないように、メモリにロードされ、あなたの鍵を保つためのプログラムです。気の利いたものは、あなたが、彼らはすでにサーバー上で実行しているかのようにサーバーがローカルの `のssh-agent`にアクセスできるように選択することができ、です。これは一種のあなたが自分のコンピュータを使用できるようにパスワードを入力するように友人を尋ねるようなものです。
+あなたがまだの場合は、お読みください ["Basics of Authentication"] [basics-of-authentication]
+この例を開始する前に導きます。あなたは、リポジトリにこのプロジェクトのための完全なソースコードを見つけることができます。 [platform samples] [platform-samples]
 
-SSHエージェント転送のより詳細な説明のためにチェックしてください。 [Steve Friedl's Tech Tips guide] [tech-tips]
+右にジャンプしてみましょう！
 
-## SSHエージェント転送を設定します
+##のOAuthアプリケーションを設定します
 
-独自のSSHキーを設定し、動作していることを確認してください。あなたはまだこれを行っていませんでした場合は、使用することができます。 [our guide on generating SSH keys] [generating-keys]
+まず、上。メインとコールバックを設定します [register a new application] {{ site.data.variables.product.product_name }} [new oauth application]
+HTTP `へのURL：// localhostを：4567/ /`。我々はによってAPIの認証を処理しようとしているとして、 [before] [basics-of-authentication]
+使用して、ラックのミドルウェアを実装します： [sinatra-auth-github] [sinatra auth github]
 
-あなたがテストすることができ、その端末に `sshの-Tのgit @ git@github.com`を入力して、あなたのローカルキーの作品：
+`` `ルビー
+「シナトラ/認証/ githubの 'を必要と
 
-`` `コマンドライン
-$ sshの-T git@github.com
-GithubのにでSSHに＃の試み
->ユーザー名こんにちは！あなたが正常に認証しましたが、GitHubには提供されません。 <em> </em>
->シェルアクセス。
+モジュール例
+クラスMyGraphApp <シナトラ::ベース
+＃!!! EVER REALアプリでハードコードされた値は、使用しないでください！
+＃その代わりに、以下のように、変数を設定し、テスト環境
+ENV && ENV場合＃ ['GITHUB_CLIENT_ID'] ['GITHUB_CLIENT_SECRET']
+CLIENT_ID = ENV ['GITHUB_CLIENT_ID']
+CLIENT_SECRET = ENV ['GITHUB_CLIENT_SECRET']
+終わり
+
+CLIENT_ID = ENV ['GH_GRAPH_CLIENT_ID']
+CLIENT_SECRET = ENV ['GH_GRAPH_SECRET_ID']
+
+有効：セッションを
+
+セット：github_options、{
+：スコープ=> "レポ"、
+：秘密=> CLIENT_SECRET、
+{：CLIENT_ID => CLIENT_ID、
+：callback_url => "/"
+}
+
+シナトラ::認証:: Githubに登録
+
+'/'入手できますか
+場合！認証？
+認証する！
+ほかに
+Access_tokenは= github_user ["token"]
+終わり
+終わり
+終わり
+終わり
 ```
 
-我々は素晴らしいスタートを切っています。それでは、あなたのサーバーにエージェント転送を許可するようにSSHを設定してみましょう。
+前の例と同様の_config.ru_ファイルを設定します。
 
-1.お好みのテキストエディタを使用して、 `の〜/ .ssh / config`をでファイルを開きます。このファイルが存在しない場合は、端​​末内に `タッチの〜/ .ssh / config`をを入力して、それを作成することができます。
+`` `ルビー
+ENV ['RACK_ENV'] || = '開発'
+「RubyGemsの」が必要
+「バンドラー/セットアップ」が必要
 
-2.サーバーのドメイン名またはIPとexample.com` `置き換えて、ファイルに次のテキストを入力します。
+必要File.expand_path（File.join（File.dirname（）、「サーバ」）） __FILE__
 
-Example.comをホスト
-ForwardAgentはい
-
-{{#warning}}
-
-**警告：**あなただけのすべてのSSH接続にこの設定を適用するには、 `*ホスト`のようなワイルドカードを使いたくなるかもしれません。あなたがにSSHすべての*サー​​バー*を使用してローカルのSSHキーを共有しているはずだとしてそれは、本当に良いアイデアではありません。彼らは、キーに直接アクセスすることはできませんが、彼らは、接続が確立されている間*あなたのように*それらを使用することができるようになります。 **あなただけあなたが信頼のサーバーを追加する必要がありますし、エージェント転送に使用すること。**
-
-{{/warning}}
-
-## SSHエージェント転送
-
-そのエージェント転送は、サーバーと協力してテストするには、サーバーにSSHで接続することができますし、もう一度 `のssh -Tのgit @のgit@github.com`を実行します。すべてが順調である場合は、ローカルで行ったように、あなたは、同じプロンプトが返されます。
-
-あなたの地元のキーが使用されている場合、あなたがわからない場合は、サーバー上の `SSH_AUTH_SOCK`変数を検査することができます。
-
-`` `コマンドライン
-$エコー "SH_AUTH_SOCK」 $S
-＃SSH_AUTH_SOCK変数をプリントアウト
-> /tmp/ssh-4hNGMk8AZX/agent.79453
+例:: MyGraphAppを実行
 ```
 
-変数が設定されていない場合は、エージェント転送が動作していないことを意味します。
+##リポジトリ情報の取得
 
-`` `コマンドライン
-$エコー "SH_AUTH_SOCK」 $S
-＃SSH_AUTH_SOCK変数をプリントアウト
-> <em>[No output]</em>
-$ sshの-T git@github.com
-＃githubのにSSHにしてみてください
->アクセス許可は拒否されました（公開鍵）。
+今回は、APIに話をするために、我々は[Octokitを使用するつもりです {{ site.data.variables.product.product_name }}
+Rubyのライブラリー]。これは、直接の束を作るよりもはるかに簡単です [Octokit]
+REST呼び出し。さらに、Octokitは、GitHubberによって開発された、積極的に維持されています
+だからあなたはそれがうまくいく知っています。
+
+Octokit経由でAPIを使用した認証は簡単です。ちょうどあなたのログインを渡します
+そして、 `Octokit :: Client`コンストラクターにトークン：
+
+`` `ルビー
+場合！認証？
+認証する！
+ほかに
+Octokit_client = Octokit :: Octokit::Client.new（：ログイン=> github_user.login、：oauth_token => github_user.token）
+終わり
 ```
 
-## SSHエージェント転送
+私たちのリポジトリに関するデータと面白いことをやってみましょう。行っていた
+彼らが使用する異なるプログラミング言語を参照し、使用されているものをカウントします
+よく。これを行うには、まずAPIから私たちのリポジトリのリストが必要になります。
+Octokitで、それは次のようになります。
 
-ここでは、SSHエージェント転送のトラブルシューティングを行う際の外を見るためにいくつかのものがあります。
-
-###あなたがコードをチェックアウトするには、SSHのURLを使用している必要があります
-
-唯一の転送SSHは、SSHのURLではなく、HTTP（S）のURLで動作します。サーバー上の* .git / configに*ファイルをチェックして、URLを確保することは、以下のようなSSHスタイルのURLです：
-
-`` `コマンドライン
-[remote "origin"]
-URL = git@github.com:：yourAccount <em> / </em> yourProject <em> .git </em>
-フェッチ= +レフリー/ヘッド/ *：レフリー/リモコン/原点/ *
+`` `ルビー
+レポ= client.repositories
 ```
 
-###あなたのSSHキーはローカルで動作する必要があります
+次に、我々は、各リポジトリを反復処理し、その言語を数えます {{ site.data.variables.product.product_name }}
+それに関連付け：
 
-あなたはあなたの鍵はエージェントの転送を介して動作することができます前に、彼らは最初にローカルで動作する必要があります。あなたがローカルであなたのSSHキーを設定することができます。 [Our guide on generating SSH keys] [generating-keys]
+`` `ルビー
+Language_obj = {}
+レポを| Repos.each行います|
+＃時々言語はnilにすることができます
+Repo.language場合
+場合！language_obj [repo.language]
+Language_obj [repo.language] + = 1
+ほかに
+Language_obj [repo.language] + = 1
+終わり
+終わり
+終わり
 
-###お使いのシステムでは、SSHエージェント転送を許可する必要があります
-
-時には、システム構成は、SSHエージェント転送を禁止します。システム構成ファイルは、ターミナルで次のコマンドを入力して使用されているかどうかを確認することができます。
-
-`` `コマンドライン
-$ sshの-v example.com <em> </em>
-＃詳細なデバッグ出力でexample.comに接続します
-> OpenSSH_5.6p1、のOpenSSL 0.9.8r 2011年2月8日 </span>
-> DEBUG1：読書構成データ/ユーザ/あなたが/.ssh/config <em> </em>
-> DEBUG1：example.comのオプションを適用します
-> DEBUG1：読書の設定データは/ etc / ssh_configを
-> DEBUG1：用のオプションを適用します*
-$出口
-あなたのローカルコマンドプロンプトに＃を返します
+Languages​​.to_s
 ```
 
-上記の例では、ファイル*の〜/ .ssh / configに*最初にロードされ、その後、*は/ etc / ssh_configの*が読み込まれます。我々は、それが次のコマンドを実行して、当社のオプションをオーバーライドだかどうかを確認するために、そのファイルを調べることができます。
+あなたは、サーバーを再起動すると、あなたのWeb​​ページには、何かを表示する必要があります
+それは次のようになります。
 
-`` `コマンドライン
-$猫の/ etc / ssh_configを
-＃の/ etc / ssh_configファイルをプリントアウト
->ホスト*
-> SendEnv項目LANG LC_ *
-> ForwardAgentなし
+`` `ルビー
+{"JavaScript"=>13, "PHP"=>1, "Perl"=>1, "CoffeeScript"=>2, "Python"=>1, "Java"=>3, "Ruby"=>3, "Go"=>1, "C++"=>1}
 ```
 
-この例では、私たちの*の/ etc / ssh_configの*ファイルは、具体的には、 `ForwardAgent no`、エージェント転送をブロックする方法があると言います。ファイルからこの行を削除すると、もう一度作業フォワーディング・エージェントを取得する必要があります。
+これまでのところ、とても良いではなく、非常に人間に優しいです。可視化
+私たちはこれらの言語カウントがどのように分布しているかを理解する手助けに素晴らしいことです。フィードしてみましょう
+D3への私たちの数は、我々が使用する言語の人気を表すニート棒グラフを取得します。
 
-###サーバーは、インバウンド接続でSSHエージェント転送を許可する必要があります
+##言語数を可視化
 
-エージェント転送はまた、サーバー上でブロックされることがあります。あなたは、エージェント転送がサーバーにSSHingと `sshd_config`を実行することによって許可されていることを確認することができます。このコマンドの出力は `AllowAgentForwarding`が設定されていることを示す必要があります。
+D3.js,、または単にD3,は、チャート、グラフ、およびインタラクティブな視覚化の多くの種類を作成するための包括的なライブラリです。
+詳細にD3を使用すると、このガイドの範囲を超えていますが、良い紹介記事のために、
+チェックアウト 。 ["D3 for Mortals"] [D3 mortals]
 
-###あなたの地元の `のssh-agent`を実行している必要があります
+D3は、JavaScriptライブラリであり、配列などのデータを扱うのが好き。それでは、私たちにRubyのハッシュを変換してみましょう
+ブラウザのJavaScriptが使用するためのJSON配列。
 
-ほとんどのコンピュータでは、オペレーティングシステムが自動的にあなたのための `のssh-agent`を起動します。 Windowsでは、しかし、これを手動で行う必要があります。我々は持っています 。 [a guide on how to start `ssh-agent` whenever you open Git Bash] [autolaunch-ssh-agent]
+`` `ルビー
+言語= []
+Repo_langs.each行う|ラング、カウント|
+Languages​​.push：言語=> LANG、：カウント=>カウント
+終わり
 
-SSH-agent`がコンピュータ上で実行されている `ことを確認するには、ターミナルで次のコマンドを入力します。
-
-`` `コマンドライン
-$エコー "SH_AUTH_SOCK」 $S
-＃SSH_AUTH_SOCK変数をプリントアウト
->を/ tmp /打ち上げ-kNSlgU /リスナー
+ERB：lang_freq、：地元の人=> { :languages => languages.to_json}
 ```
 
-###あなたのキーは `のssh-agent`に利用可能でなければなりません
+私たちは、単に私たちのオブジェクトの各キーと値のペアを繰り返し処理とにそれらをプッシュしています
+新しい配列。私たちは反復したくなかったので、我々はこれ以前をしなかった理由は、
+私たちの `language_obj`オブジェクトの上に我々はそれを作成している間。
 
-あなたのキーは、次のコマンドを実行して `のssh-agent`に表示されていることを確認することができます。
+さて、_lang_freq.erb_は、バーグラフのレンダリングをサポートするためにいくつかのJavaScriptを必要としています。
+今のところ、あなたはちょうどここに提供されるコードを使用することができ、かつ上記のリンクされたリソースを参照してください。
+あなたはD3がどのように機能するかについての詳細を知りたい場合：
 
-`` `コマンドライン
-SSH-追加-L
+`` `HTML
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.0.1/d3.v3.min.js"></script>
+<style>
+SVG {
+パディング： 20pxピクセル;
+}
+RECT {
+記入します。＃2d578b
+}
+テキスト{
+フィル：白;
+}
+Text.yAxis {
+フォントサイズ： 12pxピクセル;
+フォントファミリ：ヘルベチカ、サンセリフ;
+フィル：黒;
+}
+</style>
+</head>
+<body>
+<p> この甘いデータをチェックアウト： </p>
+<div id="lang_freq"></div>
+
+</body>
+<script>
+Var data = <％= languages％>;
+
+VAR barWidth = 40;
+VAR幅=（barWidth + 10)）* data.length。
+VAR高さ= 300;
+
+VARのx = d3.scale.linear（）ドメイン（）.range（）。 [0, data.length] [0, width]
+VARのy = d3.scale.linear（）。ドメイン（）。 [0, d3.max(data, function(datum) { return datum.count; })]
+RangeRound（）。 [0, height]
+
+// DOMにキャンバスを追加
+するvar languageBars = d3.select（ "＃のlang_freq」）。
+（ "：SVG SVG"）を追加します。
+ATTR（「幅」、幅）。
+ATTR（「高さ」、高さ）;
+
+LanguageBars.selectAll（「RECT」）。
+データ（データ）。
+入る（）。
+（ "：RECT SVG"）を追加します。
+ATTR（「X」、機能（データム、インデックス））。 { return x(index); }
+ATTR（「y」は、機能（データム））。 { return height - y(datum.count); }
+ATTR（「高さ」、機能（データム））。 { return y(datum.count); }
+（「幅」、barWidth）ATTR。
+
+LanguageBars.selectAll（ "テキスト"）。
+データ（データ）。
+入る（）。
+（ "：テキストSVG"）を追加します。
+ATTR（「X」、機能（データム、インデックス））。 { return x(index) + barWidth; }
+ATTR（「y」は、機能（データム））。 { return height - y(datum.count); }
+ATTR（「DX」、-barWidth /2).）。
+ATTR（「DY "、" 1.2em "）。
+ATTR（「テキストアンカー」、「中」）。
+テキスト（関数（データム））; { return datum.count;}
+
+LanguageBars.selectAll（「text.yAxis」）。
+データ（データ）。
+入力します（）追加。（ "SVG：テキスト"）。
+ATTR（「X」、機能（データム、インデックス））。 { return x(index) + barWidth; }
+ATTR（「Y」、高さ）。
+ATTR（「DX」、-barWidth /2).）。
+ATTR（「テキストアンカー」、「中」）。
+テキスト（関数（データム））; { return datum.language;}
+ATTR（ "（(0, 18)、18）翻訳"、 "変換"）。
+ATTR（「クラス」、「YAXIS "）;
+</script>
+</html>
 ```
 
-コマンドにはIDが利用できないと言う場合は、あなたのキーを追加する必要があります。
+あー！ここでも、このコードのほとんどが何をしているのか心配しないでください。要部
+ここでは一番上の行の方法です - `varデータ=は; `--whichを示し
+我々は、操作のためにERBに私たちの以前に作成した `languages​​`配列を渡していること。
 
-`` `コマンドライン
-$ sshを-追加yourkey <em> </em>
+「D3の人間のための「ガイドが示唆するように、これは必ずしも最良の使用ではありません
+D3.。しかし、それはあなたがOctokitと一緒に、ライブラリを使用する方法を説明するためのものでありません、
+いくつかの本当に素晴らしいものを作るために。
+
+##異なるAPI呼び出しを組み合わせます
+
+今では、告白の時間です：リポジトリ内の `language`属性
+唯一の定義された「一次」言語を識別する。それはあなたが持っている場合ことを意味し
+複数の言語を組み合わせて、リポジトリ、コードのほとんどのバイトの1
+第一言語であると考えられています。
+
+言語の的に_真_表現を取得するために、いくつかのAPIコールを結合してみましょう
+すべての私たちのコードを横切って書き込まれたバイトの最大数を持っています。 A [treemap] [D3 treemap]
+むしろ、使用私たちのコーディング言語の大きさを視覚化するための素晴らしい方法であるべきです
+単純にカウントより。私たちは、見えるオブジェクトの配列を構築する必要があります
+このようなもの：
+
+<％= jsonの\
+[ { "name": "language1", "size": 100},
+{ "name": "language2", "size": 23}
+...
+]
 ```
 
-{{#tip}}
+我々は既に上記のリポジトリのリストを持っているので、の各1を検査してみましょう、と
+呼び出し： [the language listing API method] [language API]
 
-それはリブート時に再開した後にMac OS Xでは、 `SSH-agent`は、このキーを「忘れる」になります。しかし、あなたは、このコマンドを使用して、キーチェーンにあなたのSSHキーをインポートすることができます。
-
-`` `コマンドライン
-$は/ usr / <em> binに/ sshは、追加-K yourkey </em>
+`` `ルビー
+レポを| Repos.each行います|
+Repo_name = repo.name
+Repo_langs = octokit_client.languages​​（ {github_user.login} "＃/＃"） {repo_name}
+終わり
 ```
 
-{{/tip}}
+そこから、我々は累積的に「マスターリスト」に見つかった各言語を追加します：
 
-[tech-tips]: http://www.unixwiz.net/techtips/ssh-agent-forwarding.html
-[generating-keys]: https://help.github.com/articles/generating-ssh-keys
-[ssh-passphrases]: https://help.github.com/ssh-key-passphrases/
-[autolaunch-ssh-agent]: https://help.github.com/articles/working-with-ssh-key-passphrases#auto-launching-ssh-agent-on-msysgit
+`` `ルビー
+Repo_langs.each行う|ラング、カウント|
+場合！language_obj [lang]
+Language_obj [lang] + =カウント
+ほかに
+Language_obj [lang] + =カウント
+終わり
+終わり
+```
+
+その後、我々はD3が理解できる構造に内容をフォーマットします。
+
+`` `ルビー
+Repo_langs.each行う|ラング、カウント|
+Language_byte_count.pushます。name => "＃（＃）は"、：=> count {lang} countは {count}
+終わり
+
+＃D3のためのいくつかの必須フォーマット
+Language_bytes = [ :name => "language_bytes", :elements => language_byte_count]
+```
+
+（D3ツリーマップの魔法の詳細については、チェックしてください。） [this simple tutorial] [language API]
+
+包むために、我々は同じERBテンプレートに渡って、このJSON情報を渡します。
+
+`` `ルビー
+ERB：lang_freq、：地元の人=> { :languages => languages.to_json, :language_byte_count => language_bytes.to_json}
+```
+
+前と同じように、ここにあなたがドロップすることができたJavaScriptの束です
+直接テンプレートに：
+
+`` `HTML
+<div id="byte_freq"></div>
+<script>
+Var language_bytes = <％= language_byte_count％>
+するvar childrenFunction =関数（D）; {return d.elements}
+するvar sizeFunction =関数（D）; {return d.count;}
+するvar colorFunction =関数（D）; {return Math.floor(Math.random()*20)}
+するvar nameFunction =関数（D）; {return d.name;}
+
+Varの各色= d3.scale.linear（）
+.domain（） [0,10,15,20]
+。範囲（ ["grey","green","yellow","red"] ）;
+
+DrawTreemap（(5000, 2000,、2000、「#byte_freq '、language_bytes、childrenFunction、nameFunction、sizeFunction、colorFunction、色）;
+
+関数drawTreemap(height,width,elementSelector,language_bytes,childrenFunction,nameFunction,sizeFunction,colorFunction,colorScale){
+
+するvarツリーマップ= d3.layout.treemap（）
+.children（c​​hildrenFunction）
+.size（） [width,height]
+.VALUE（sizeFunction）。
+
+Varのdiv = d3.select（elementSelector）
+.append（「DIV」）
+.style（「位置」、「相対」）
+.style（「幅」、幅+「PX」）
+.style（「高さ」、高さ+「PX」）。
+
+div.data（language_bytes）.selectAll（「DIV」）
+.dataの（関数（d）参照） {return treemap.nodes(d);}
+入る（）。
+.append（「DIV」）
+.ATTR（「クラス」、「セル」）
+.style（「背景」、関数の（d）） { return colorScale(colorFunction(d));}
+.call（セル）
+.text（nameFunction）。
+}
+
+機能セル（）{
+この
+.style（「左」、関数の（d）） {return d.x + "px";}
+.style（「上部」、関数の（d）） {return d.y + "px";}
+.style（「幅」、関数の（d）） {return d.dx - 1 + "px";}
+.style（「高」、関数の（d））。 {return d.dy - 1 + "px";}
+}
+</script>
+```
+
+ら出来上がり！相対であなたのレポ言語を含む美しい長方形、
+一目で見やすいですプロポーション。あなたがする必要がある場合があります
+最初の2として渡された、あなたのツリーマップの高さと幅を調整
+`すべての情報が正しく表示されるまでに取得するには、上記のdrawTreemap`への引数。
+
+
+[D3.js] ：http://d3js.org/
+[basics-of-authentication] 認証の＃基本！
+[sinatra auth github]: https://github.com/atmos/sinatra_auth_github
+[Octokit]: https://github.com/octokit/octokit.rb
+[D3-for-mere-mortals/ mortals] ！ （http://www.recursion.org/d3-for-mere-mortals/）
+[D4063582 treemap] ！ （http://bl.ocks.org/mbostock/4063582）
+[language API] ：https://developer.github.com/v3/repos/#list-languages
+[simple tree map] ：http://2kittymafiasoftware.blogspot.com/2011/09/simple-treemap-visualization-with-d3.html
+[platform samples]: https://github.com/github/platform-samples/tree/master/api/ruby/rendering-data-as-graphs
+[new oauth application]: https://github.com/settings/applications/new
