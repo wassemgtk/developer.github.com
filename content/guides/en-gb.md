@@ -7,20 +7,20 @@ title: Using SSH Agent Forwarding
 
 SSH agent forwarding can be used to make deploying to a server simple.  It allows you to use your local SSH keys instead of leaving keys (without passphrases!) sitting on your server.
 
-If you've already set up an SSH key to interact with {{ site.data.variables.product.product_name }}, you're probably familiar with `ssh-agent`. It's a program that runs in the background and keeps your key loaded into memory, so that you don't need to enter your passphrase every time you need to use the key. The nifty thing is, you can choose to let servers access your local `ssh-agent` as if they were already running on the server. This is sort of like asking a friend to enter their password so that you can use their computer.
+If you've already set up an SSH key to interact with {{ site.data.variables.product.product_name }} , you're probably familiar with `ssh-agent`. It's a program that runs in the background and keeps your key loaded into memory, so that you don't need to enter your passphrase every time you need to use the key. The nifty thing is, you can choose to let servers access your local `ssh-agent` as if they were already running on the server. This is sort of like asking a friend to enter their password so that you can use their computer.
 
-Check out [Steve Friedl's Tech Tips guide][tech-tips] for a more detailed explanation of SSH agent forwarding.
+Check out [Steve Friedl's Tech Tips guide] [tech-tips] for a more detailed explanation of SSH agent forwarding.
 
 ## Setting up SSH agent forwarding
 
-Ensure that your own SSH key is set up and working. You can use [our guide on generating SSH keys][generating-keys] if you've not done this yet.
+Ensure that your own SSH key is set up and working. You can use [our guide on generating SSH keys] [generating-keys] if you've not done this yet.
 
 You can test that your local key works by entering `ssh -T git@github.com` in the terminal:
 
 ``` command-line
 $ ssh -T git@github.com
 # Attempt to SSH in to github
-> Hi <em>username</em>! You've successfully authenticated, but GitHub does not provide
+> Hi <em> username </em> ! You've successfully authenticated, but GitHub does not provide
 > shell access.
 ```
 
@@ -30,8 +30,8 @@ We're off to a great start. Let's set up SSH to allow agent forwarding to your s
 
 2. Enter the following text into the file, replacing `example.com` with your server's domain name or IP:
 
-        Host example.com
-          ForwardAgent yes
+Host example.com
+ForwardAgent yes
 
 {{#warning}}
 
@@ -46,7 +46,7 @@ To test that agent forwarding is working with your server, you can SSH into your
 If you're unsure if your local key is being used, you can also inspect the `SSH_AUTH_SOCK` variable on your server:
 
 ``` command-line
-$ echo "$SSH_AUTH_SOCK"
+$ echo " $S SH_AUTH_SOCK"
 # Print out the SSH_AUTH_SOCK variable
 > /tmp/ssh-4hNGMk8AZX/agent.79453
 ```
@@ -54,7 +54,7 @@ $ echo "$SSH_AUTH_SOCK"
 If the variable is not set, it means that agent forwarding is not working:
 
 ``` command-line
-$ echo "$SSH_AUTH_SOCK"
+$ echo " $S SH_AUTH_SOCK"
 # Print out the SSH_AUTH_SOCK variable
 > <em>[No output]</em>
 $ ssh -T git@github.com
@@ -72,23 +72,23 @@ SSH forwarding only works with SSH URLs, not HTTP(s) URLs. Check the *.git/confi
 
 ``` command-line
 [remote "origin"]
-  url = git@github.com:<em>yourAccount</em>/<em>yourProject</em>.git
-  fetch = +refs/heads/*:refs/remotes/origin/*
+Url = git@github.com: <em> yourAccount </em> / <em> yourProject </em> .git
+fetch = +refs/heads/*:refs/remotes/origin/*
 ```
 
 ### Your SSH keys must work locally
 
-Before you can make your keys work through agent forwarding, they must work locally first. [Our guide on generating SSH keys][generating-keys] can help you set up your SSH keys locally.
+Before you can make your keys work through agent forwarding, they must work locally first. [Our guide on generating SSH keys] [generating-keys] can help you set up your SSH keys locally.
 
 ### Your system must allow SSH agent forwarding
 
 Sometimes, system configurations disallow SSH agent forwarding. You can check if a system configuration file is being used by entering the following command in the terminal:
 
 ``` command-line
-$ ssh -v <em>example.com</em>
+$ ssh -v <em> example.com </em>
 # Connect to example.com with verbose debug output
-> OpenSSH_5.6p1, OpenSSL 0.9.8r 8 Feb 2011</span>
-> debug1: Reading configuration data /Users/<em>you</em>/.ssh/config
+> OpenSSH_5.6p1, OpenSSL 0.9.8r 8 Feb 2011 </span>
+> debug1: Reading configuration data /Users/ <em> you </em> /.ssh/config
 > debug1: Applying options for example.com
 > debug1: Reading configuration data /etc/ssh_config
 > debug1: Applying options for *
@@ -114,12 +114,12 @@ Agent forwarding may also be blocked on your server. You can check that agent fo
 
 ### Your local `ssh-agent` must be running
 
-On most computers, the operating system automatically launches `ssh-agent` for you.  On Windows, however, you need to do this manually. We have [a guide on how to start `ssh-agent` whenever you open Git Bash][autolaunch-ssh-agent].
+On most computers, the operating system automatically launches `ssh-agent` for you. On Windows, however, you need to do this manually. We [a guide on how to start `ssh-agent` whenever you open Git Bash] [autolaunch-ssh-agent] have .
 
 To verify that `ssh-agent` is running on your computer, type the following command in the terminal:
 
 ``` command-line
-$ echo "$SSH_AUTH_SOCK"
+$ echo " $S SH_AUTH_SOCK"
 # Print out the SSH_AUTH_SOCK variable
 > /tmp/launch-kNSlgU/Listeners
 ```
@@ -135,7 +135,7 @@ ssh-add -L
 If the command says that no identity is available, you'll need to add your key:
 
 ``` command-line
-$ ssh-add <em>yourkey</em>
+$ ssh-add <em> yourkey </em>
 ```
 
 {{#tip}}
@@ -143,7 +143,7 @@ $ ssh-add <em>yourkey</em>
 On Mac OS X, `ssh-agent` will "forget" this key, once it gets restarted during reboots. But you can import your SSH keys into Keychain using this command:
 
 ``` command-line
-$ /usr/bin/ssh-add -K <em>yourkey</em>
+$ /usr/bin/ssh-add -K <em> yourkey </em>
 ```
 
 {{/tip}}
