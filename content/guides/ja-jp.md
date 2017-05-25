@@ -1,120 +1,154 @@
 ---
-タイトル：コメントでの作業
+：/ガイド/使用して、ssh-agentの転送/
 ---
 
-＃コメントでの作業！
 
 {:toc}
 
-任意のプル要求については、コメント・ビューの3種類が用意されています。 {{ site.data.variables.product.product_name }}
-[comments on the Pull Request] [PR comment] プル要求の中で、全体として、 [comments on a specific line] [PR line comment]
-そして [comments on a specific commit] [commit comment] 、プル要求内。
+SSHエージェント転送は、サーバ簡単に展開するために使用することができます。それはあなたが代わりに鍵を残してのローカルのSSHキーを使用することができます（パスフレーズなし！）あなたのサーバー上に座って。
 
-コメントのこれらの各タイプ は、APIの異なる部分を{{ site.data.variables.product.product_name }}通過します。
-このガイドでは、我々はあなたがそれぞれ1にアクセスして操作する方法を見ていきます。すべてのための
-例えば、私たちは「octocat」に使うことになるでしょう [this sample Pull Request made] [sample PR]
-リポジトリ。いつものように、サンプルはで見つけることができます。 [our platform-samples repository] [platform-samples]
+すでにと対話するためのSSHキーを設定している場合は、おそらく `sshを-agent`に精通しています。{{ site.data.variables.product.product_name }}これは、バックグラウンドで実行され、パスフレーズキーを使用する必要がある たびに入力する必要がないように、メモリにロードされ、あなたの鍵を保つためのプログラムです。気の利いたものは、あなたが、彼らはすでにサーバー上で実行しているかのようにサーバーがローカルの `のssh-agent`にアクセスできるように選択することができ、です。これは一種のあなたが自分のコンピュータを使用できるようにパスワードを入力するように友人を尋ねるようなものです。
 
-##プルリクエストコメント
+SSHエージェント転送のより詳細な説明のためにチェックしてください。 [Steve Friedl's Tech Tips guide] [tech-tips]
 
-プルリクエストのコメントにアクセスするには、を介して行きますよ。 [the Issues API] [issues]
-これは、最初は直感に反するように見えるかもしれません。しかし、あなたはそのプルを理解すれば
-要求は、それが問題のAPIを使用することは理にかなって、コードでだけの問題であり、
-##リストは、プル要求にコミット
+## SSHエージェント転送を設定します
 
-我々は、使用して、Rubyスクリプトを作成することによって、プルリクエストのコメントを取り出す説明します
-[Octokit.rb] [octokit.rb] 。また、作成したいと思うでしょう。 [personal access token] [personal token]
+独自のSSHキーを設定し、動作していることを確認してください。あなたはまだこれを行っていませんでした場合は、使用することができます。 [our guide on generating SSH keys] [generating-keys]
 
-次のコードは、プルリクエストからのコメントへのアクセス始めるのに役立つ必要があります
-Octokit.rb使用しました：
+あなたがテストすることができ、その端末に `sshの-Tのgit @ git@github.com`を入力して、あなたのローカルキーの作品：
 
-`` `ルビー
-「octokit 'を必要と
-
-＃!!! EVER REALアプリでハードコードされた値は、使用しないでください！
-＃その代わりに、以下のように、変数を設定し、テスト環境
-@client || = Octokit :: Octokit::Client.new（：access_tokenは=> ['MY_PERSONAL_TOKEN'] access_tokenは）
-
-行う.each client.issue_comments（「octocat /スプーン・ナイフ」、, 1176).each年）|コメント|
-ユーザー名=コメント [:user] [:login]
-Post_date =コメント [:created_at]
-コンテンツ=コメント [:body]
-
-"。＃は＃上でコメントをしたそれは言う： '＃'"を置きます {username} {post_date} \n {content} \n
-終わり
+`` `コマンドライン
+$ sshの-T git@github.com
+GithubのにでSSHに＃の試み
+>ユーザー名こんにちは！あなたが正常に認証しましたが、GitHubには提供されません。 <em> </em>
+>シェルアクセス。
 ```
 
-ここでは、具体的には、コメント（ `issue_comments`）を取得するための問題APIに出て呼んでいます
-リポジトリの名前（ `octocat /スプーン-Knife`）、およびプルリクエストIDの両方を提供
-我々は（ `1176`）に興味を持っています。その後、それは単にを反復処理の問題です
-コメントは各1についての情報を取得します。
+我々は素晴らしいスタートを切っています。それでは、あなたのサーバーにエージェント転送を許可するようにSSHを設定してみましょう。
 
-##リストは、プル要求にコミット
+1.お好みのテキストエディタを使用して、 `の〜/ .ssh / config`をでファイルを開きます。このファイルが存在しない場合は、端​​末内に `タッチの〜/ .ssh / config`をを入力して、それを作成することができます。
 
-差分ビュー内では、単数形の特定の側面についての議論を開始することができます
-プルリクエスト内で行われた変更。これらのコメントは、個々の行で発生します
-変更されたファイル内。この議論のためのエンドポイントURLがから来ています。 [the Pull Request Review API] [PR Review API]
+2.サーバーのドメイン名またはIPとexample.com` `置き換えて、ファイルに次のテキストを入力します。
 
-次のコードは、単一のプルリクエスト番号与えられたファイルに行われたすべてのプル要求のコメントを、フェッチ：
+Example.comをホスト
+ForwardAgentはい
 
-`` `ルビー
-「octokit 'を必要と
+{{#warning}}
 
-＃!!! EVER REALアプリでハードコードされた値は、使用しないでください！
-＃その代わりに、以下のように、変数を設定し、テスト環境
-@client || = Octokit :: Octokit::Client.new（：access_tokenは=> ['MY_PERSONAL_TOKEN'] access_tokenは）
+**警告：**あなただけのすべてのSSH接続にこの設定を適用するには、 `*ホスト`のようなワイルドカードを使いたくなるかもしれません。あなたがにSSHすべての*サー​​バー*を使用してローカルのSSHキーを共有しているはずだとしてそれは、本当に良いアイデアではありません。彼らは、キーに直接アクセスすることはできませんが、彼らは、接続が確立されている間*あなたのように*それらを使用することができるようになります。 **あなただけあなたが信頼のサーバーを追加する必要がありますし、エージェント転送に使用すること。**
 
-行う.each client.issue_comments（「octocat /スプーン・ナイフ」、, 1176).each年）|コメント|
-ユーザー名=コメント [:user] [:login]
-Post_date =コメント [:created_at]
-コンテンツ=コメント [:body]
-パス=コメント [:path]
-位置=コメント [:position]
+{{/warning}}
 
-プット "＃は、ライン＃で、＃というファイルを＃にコメントをしたそれは言う：。 {username} '＃'を" {post_date} {path} {position} {content} \n \n
-終わり
+## SSHエージェント転送
+
+そのエージェント転送は、サーバーと協力してテストするには、サーバーにSSHで接続することができますし、もう一度 `のssh -Tのgit @のgit@github.com`を実行します。すべてが順調である場合は、ローカルで行ったように、あなたは、同じプロンプトが返されます。
+
+あなたの地元のキーが使用されている場合、あなたがわからない場合は、サーバー上の `SSH_AUTH_SOCK`変数を検査することができます。
+
+`` `コマンドライン
+$エコー "SH_AUTH_SOCK」 $S
+＃SSH_AUTH_SOCK変数をプリントアウト
+> /tmp/ssh-4hNGMk8AZX/agent.79453
 ```
 
-あなたはそれが上記の例と非常に似ていることに気づくでしょう。違い
-このビューとプルリクエストのコメントの間の会話の焦点です。
-プルリクエストで行われたコメントは、議論やアイデアにするために予約する必要があります
-コードの全体的な方向性。プル要求の見直しの一環として作られたコメントすべきです
-特定の変更がファイル内に実装された方法と特異的に対処します。
+変数が設定されていない場合は、エージェント転送が動作していないことを意味します。
 
-##コメントをコミット
-
-コメントの最後のタイプは、個々のコミットに特異的に発生します。このために、
-彼らが利用しています。 [the commit comment API] [commit comment API]
-
-コミットのコメントを取得するには、コミットのSHA1を使用したいと思います。
-言い換えれば、あなたは、プル要求に関連する任意の識別子を使用しません。次に例を示します。
-
-`` `ルビー
-「octokit 'を必要と
-
-＃!!! EVER REALアプリでハードコードされた値は、使用しないでください！
-＃その代わりに、以下のように、変数を設定し、テスト環境
-@client || = Octokit :: Octokit::Client.new（：access_tokenは=> ['MY_PERSONAL_TOKEN'] access_tokenは）
-
-Client.commit_comments（「octocat /スプーン・ナイフ "、" cbc28e7c8caee26febc8c013b0adfb97a4edd96e」）それぞれん|。コメント|
-ユーザー名=コメント [:user] [:login]
-Post_date =コメント [:created_at]
-コンテンツ=コメント [:body]
-
-"。＃は＃上でコメントをしたそれは言う： '＃'"を置きます {username} {post_date} \n {content} \n
-終わり
+`` `コマンドライン
+$エコー "SH_AUTH_SOCK」 $S
+＃SSH_AUTH_SOCK変数をプリントアウト
+> <em>[No output]</em>
+$ sshの-T git@github.com
+＃githubのにSSHにしてみてください
+>アクセス許可は拒否されました（公開鍵）。
 ```
 
-このAPIコールは、単一の行のコメントを取得することに注意してください、と同様のコメント
-全体にコミットします。
+## SSHエージェント転送
 
-[PR comment] 「https://github.com/octocat/Spoon-Knife/pull/1176#issuecomment-24114792 "
-[PR line comment] 「https://github.com/octocat/Spoon-Knife/pull/1176#discussion_r6252889 "
-[commit comment] 「https://github.com/octocat/Spoon-Knife/commit/cbc28e7c8caee26febc8c013b0adfb97a4edd96e#commitcomment-4049848 "
-[sample PR] ！ （https://github.com/octocat/Spoon-Knife/pull/1176）
-[platform-samples]: https://github.com/github/platform-samples/tree/master/api/ruby/working-with-comments
-[issues] ！ （https://developer.github.com/v3/issues/comments/）
-[personal token]: https://help.github.com/articles/creating-an-access-token-for-command-line-use
-[octokit.rb]: https://github.com/octokit/octokit.rb
-[PR Review API] ！ （https://developer.github.com/v3/pulls/comments/）
-[commit comment API] ：https://developer.github.com/v3/repos/comments/#get-a-single-commit-comment
+ここでは、SSHエージェント転送のトラブルシューティングを行う際の外を見るためにいくつかのものがあります。
+
+###あなたがコードをチェックアウトするには、SSHのURLを使用している必要があります
+
+唯一の転送SSHは、SSHのURLではなく、HTTP（S）のURLで動作します。サーバー上の* .git / configに*ファイルをチェックして、URLを確保することは、以下のようなSSHスタイルのURLです：
+
+`` `コマンドライン
+[remote "origin"]
+URL = git@github.com:：yourAccount <em> / </em> yourProject <em> .git </em>
+フェッチ= +レフリー/ヘッド/ *：レフリー/リモコン/原点/ *
+```
+
+###あなたのSSHキーはローカルで動作する必要があります
+
+あなたはあなたの鍵はエージェントの転送を介して動作することができます前に、彼らは最初にローカルで動作する必要があります。あなたがローカルであなたのSSHキーを設定することができます。 [Our guide on generating SSH keys] [generating-keys]
+
+###お使いのシステムでは、SSHエージェント転送を許可する必要があります
+
+時には、システム構成は、SSHエージェント転送を禁止します。システム構成ファイルは、ターミナルで次のコマンドを入力して使用されているかどうかを確認することができます。
+
+`` `コマンドライン
+$ sshの-v example.com <em> </em>
+＃詳細なデバッグ出力でexample.comに接続します
+> OpenSSH_5.6p1、のOpenSSL 0.9.8r 2011年2月8日 </span>
+> DEBUG1：読書構成データ/ユーザ/あなたが/.ssh/config <em> </em>
+> DEBUG1：example.comのオプションを適用します
+> DEBUG1：読書の設定データは/ etc / ssh_configを
+> DEBUG1：用のオプションを適用します*
+$出口
+あなたのローカルコマンドプロンプトに＃を返します
+```
+
+上記の例では、ファイル*の〜/ .ssh / configに*最初にロードされ、その後、*は/ etc / ssh_configの*が読み込まれます。我々は、それが次のコマンドを実行して、当社のオプションをオーバーライドだかどうかを確認するために、そのファイルを調べることができます。
+
+`` `コマンドライン
+$猫の/ etc / ssh_configを
+＃の/ etc / ssh_configファイルをプリントアウト
+>ホスト*
+> SendEnv項目LANG LC_ *
+> ForwardAgentなし
+```
+
+この例では、私たちの*の/ etc / ssh_configの*ファイルは、具体的には、 `ForwardAgent no`、エージェント転送をブロックする方法があると言います。ファイルからこの行を削除すると、もう一度作業フォワーディング・エージェントを取得する必要があります。
+
+###サーバーは、インバウンド接続でSSHエージェント転送を許可する必要があります
+
+エージェント転送はまた、サーバー上でブロックされることがあります。あなたは、エージェント転送がサーバーにSSHingと `sshd_config`を実行することによって許可されていることを確認することができます。このコマンドの出力は `AllowAgentForwarding`が設定されていることを示す必要があります。
+
+###あなたの地元の `のssh-agent`を実行している必要があります
+
+ほとんどのコンピュータでは、オペレーティングシステムが自動的にあなたのための `のssh-agent`を起動します。 Windowsでは、しかし、これを手動で行う必要があります。我々は持っています 。 [a guide on how to start `ssh-agent` whenever you open Git Bash] [autolaunch-ssh-agent]
+
+SSH-agent`がコンピュータ上で実行されている `ことを確認するには、ターミナルで次のコマンドを入力します。
+
+`` `コマンドライン
+$エコー "SH_AUTH_SOCK」 $S
+＃SSH_AUTH_SOCK変数をプリントアウト
+>を/ tmp /打ち上げ-kNSlgU /リスナー
+```
+
+###あなたのキーは `のssh-agent`に利用可能でなければなりません
+
+あなたのキーは、次のコマンドを実行して `のssh-agent`に表示されていることを確認することができます。
+
+`` `コマンドライン
+SSH-追加-L
+```
+
+コマンドにはIDが利用できないと言う場合は、あなたのキーを追加する必要があります。
+
+`` `コマンドライン
+$ sshを-追加yourkey <em> </em>
+```
+
+{{#tip}}
+
+それはリブート時に再開した後にMac OS Xでは、 `SSH-agent`は、このキーを「忘れる」になります。しかし、あなたは、このコマンドを使用して、キーチェーンにあなたのSSHキーをインポートすることができます。
+
+`` `コマンドライン
+$は/ usr / <em> binに/ sshは、追加-K yourkey </em>
+```
+
+{{/tip}}
+
+[tech-tips]: http://www.unixwiz.net/techtips/ssh-agent-forwarding.html
+[generating-keys]: https://help.github.com/articles/generating-ssh-keys
+[ssh-passphrases]: https://help.github.com/ssh-key-passphrases/
+[autolaunch-ssh-agent]: https://help.github.com/articles/working-with-ssh-key-passphrases#auto-launching-ssh-agent-on-msysgit
