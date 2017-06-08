@@ -7,7 +7,6 @@ Last month, we announced the [upcoming repository redirect behavior for the API]
 
 To learn more about repository redirects and how they will benefit your applications, be sure to check out the [original announcement][].
 
-To start enjoying repository redirects right away, just provide the following custom [media type][] in the `Accept` header:
 
     application/vnd.github.quicksilver-preview+json
 
