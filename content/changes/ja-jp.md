@@ -1,12 +1,19 @@
 ---
-Title：ステータスAPIの制限
-著者名：rsanheim
+Title：リポジトリのリダイレクトは7月にAPI v3になります
+著者名：jasonrudolph
 ---
 
-すべてのAPIコンシ[statuses]ューマーに高いレベルのサービスを提供す間もなく
-コミットSHA、リポジトリ、およびコンテキストごとに1000までです。
+先月、我々はこれを発表し、開発者がプレビューできるようにしました。 2015年7月21日**以降、APIはすべてのAPIコンシューマ向けに自動的にこれらのリダイレクトを提供します。 [upcoming repository redirect behavior for the API] [original announcement]
 
-11月3日の月曜日から、この制限を超える既存のデータセットを削除し、最も古いデータセットを削除します
-最初に記録する。その制限を超えてステータスを作成しようとすると、a。 [validation error]
+リポジトリリダイレクトの詳細とアプリケーションの利点については、を参照してください。 [] [original announcement]
 
-ご意見やご質問がございましたら、私たちにご相談ください。 [contact]
+
+application/vnd.github.quicksilver-preview+json
+
+プレビュー期間中にこの機能拡張を試した皆様に感謝します。
+
+いつものように、ご質問がありましたら、どうぞ。私たちはあなたからの声を聞きます。 [get in touch] [contact]
+
+[media type] ：/ V3/media/ /レポ/リリース/
+[original announcement] ：/ changes / 2015-04-17-preview-repository-redirects /
+[contact] ：https://github.com/contact?form%5Bsubject%5D=API+Repository+Redirects
