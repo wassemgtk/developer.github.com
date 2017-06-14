@@ -1,12 +1,11 @@
 ---
-Title：ステータスAPIの制限
-著者名：rsanheim
+Title：GitHub PagesのMeta APIに追加されたレコード
+Author_name：leereilly
 ---
 
-すべてのAPIコンシ[statuses]ューマーに高いレベルのサービスを提供す間もなく
-コミットSHA、リポジトリ、およびコンテキストごとに1000までです。
+（/ [Meta API] v3 / meta /）には、（https://pages.github.com/）のAレコードのIPアドレスが含まれるようになりました。 [GitHub Pages]
 
-11月3日の月曜日から、この制限を超える既存のデータセットを削除し、最も古いデータセットを削除します
-最初に記録する。その制限を超えてステータスを作成しようとすると、a。 [validation error]
 
-ご意見やご質問がございましたら、私たちにご相談ください。 [contact]
+これらのIPアドレスは（https://help.github.com/articles/tips-for-configuring-an-a-record-[configure A records with your DNS provider for GitHub Pages] with-your-dns-provider/）に使用されます。これらのアドレスは過去に数回変化しました。このAPIは常に現在のアドレスを提供するので、DNSレコードを最新の状態に保つプロセスを自動化できます。
+
+ご不明な点がございましたら、（https://github.com/contact?form%5Bsubject%5D=GitHub+Pages+A+Records+Added+to+API）ください。喜んでお手伝いいたします。 [get in touch]
