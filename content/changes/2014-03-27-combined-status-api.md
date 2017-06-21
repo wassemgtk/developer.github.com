@@ -8,10 +8,6 @@ thousands of teams answer that question. Developers use it to record the status
 of continuous integration builds, contributor license agreements, code coverage
 analysis, automated security testing, dependency management, and more.
 
-For many teams, a branch is considered "green" only when _all_ of their various
-status checks are successful. With the new [Combined Status
-API][combined-status-api], developers can easily fetch this single, consolidated
-status for any branch, commit, or tag.
 
 ### Status context
 
