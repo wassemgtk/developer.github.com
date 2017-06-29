@@ -9,7 +9,3 @@ party applications the ability to create public repositories on your behalf
 without granting access to your private repositories.
 
 If you have any questions or feedback, please [get in touch][contact].
-
-[contact]: https://github.com/contact?form[subject]=API+create+repositories+with+public_repo+scope
-[api]: /v3/repos/#create
-[scope]: /v3/oauth/#scopes
