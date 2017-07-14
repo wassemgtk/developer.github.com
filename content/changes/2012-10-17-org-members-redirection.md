@@ -20,5 +20,4 @@ acquiring information about the public membership of organizations. If you are
 not a member you are not allowed to see private membership information so you
 should be using the public membership resources.
 
-If you have any questions or feedback, please drop us a line at
-[support@github.com](mailto:support@github.com?subject=Org members API).
+
