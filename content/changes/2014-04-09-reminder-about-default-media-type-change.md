@@ -7,8 +7,3 @@ Just a friendly reminder: On April 15, 2014, the GitHub API will start serving t
 
 If you have any questions, please [get in touch][contact].
 
-[2014-01-announcement]: /changes/2014-01-07-upcoming-change-to-default-media-type/
-[contact]: https://github.com/contact?form[subject]=Upcoming+change+to+default+API+media+type
-[what's-changing]: /changes/2014-01-07-upcoming-change-to-default-media-type/#whats-changing
-[who-it-affects]: /changes/2014-01-07-upcoming-change-to-default-media-type/#who-is-affected
-[prepare]: /changes/2014-01-07-upcoming-change-to-default-media-type/#what-should-you-do
