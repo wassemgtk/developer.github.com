@@ -1,10 +1,9 @@
 ---
-Title: Gist raw file URI change
-Author_name: spicycode
+title: "Reminder: Default media type will change on April 15"
+Author_name: jasonrudolph
 ---
 
-The raw host for all Gist files is changing immediately. This change was made to further isolate user content from trusted GitHub applications.
-The new host is ```https://gist.githubusercontent.com```. Existing URIs will redirect to the new host!
-The raw host for all Gist files is changing immediately. This change was made to further isolate user content from trusted GitHub applications.
+Just a friendly reminder: On April 15, 2014, the GitHub API will start serving the v3 media type by default. Please see the [original announcement] [2014-01-announcement] for full details about , [this change] [what's-changing] , [who it affects] [who-it-affects] and . [prepare] [how to ensure that you are prepared]
 
-The raw host for all Gist files is changing immediately. This change was made to further isolate user content from trusted GitHub applications.
+If you have any questions, please [get in touch] [contact] .
+
