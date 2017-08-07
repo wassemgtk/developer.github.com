@@ -16,4 +16,3 @@ Note the starred repository is now available in the repo field.
 If you have any questions or feedback about these changes, please [drop us a line][contact].
 
 [starring]: /v3/activity/starring/#list-repositories-being-starred-with-star-creation-timestamps
-[contact]: https://github.com/contact?form[subject]=New+Attributes+for+Starring+API
