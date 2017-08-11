@@ -15,6 +15,3 @@ Thanks to everyone that tried out this enhancement during the preview period.
 
 As always, if you have any questions, please [get in touch][contact]. We love hearing from you.
 
-[media type]: /v3/media/
-[original announcement]: /changes/2015-04-17-preview-repository-redirects/
-[contact]: https://github.com/contact?form%5Bsubject%5D=API+Repository+Redirects
