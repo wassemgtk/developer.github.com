@@ -7,9 +7,7 @@ author_name: azizshamim
 
 The [GitHub Bug Bounty program](https://bounty.github.com) recently identified a few cross-domain vulnerabilities related to user-generated content, and we've shipped improvements today to address those issues.
 
-In order to better isolate your content from potentially malicious content uploaded by other users (e.g., content that might contain Cross-Site Scripting or other embedded attacks), we now serve user-generated content from subdomains of **githubusercontent.com**. This content is no longer served from subdomains of **github.com**.
 
-## What's affected?
 
 This change affects the following subdomains:
 
