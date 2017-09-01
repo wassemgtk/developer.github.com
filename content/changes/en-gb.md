@@ -1,0 +1,11 @@
+---
+title: Grant access to create public repositories without granting access to private repositories
+author_name: pengwynn
+---
+
+The [Create Repository method] [api] now allows creating public repositories via
+OAuth with `public_repo` [scope] [] . This means you can safely grant third
+party applications the ability to create public repositories on your behalf
+without granting access to your private repositories.
+
+If you have any questions or feedback, please [get in touch] [contact] .
