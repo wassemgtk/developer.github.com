@@ -2,7 +2,7 @@
 title: Integrations Directory marketing guidelines
 ---
 
-# Marketing guideline
+# Marketing guidelines!!!
 
 {:toc}
 
