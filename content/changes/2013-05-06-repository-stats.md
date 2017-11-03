@@ -9,10 +9,6 @@ but we can't wait to see what others can do with this information.
 
 Starting today, these resources are available to you:
 
-* **[Contributors](/v3/repos/statistics/#contributors)**
-* **[Commit Activity](/v3/repos/statistics/#commit-activity)**
-* **[Code Frequency](/v3/repos/statistics/#code-frequency)**
-* **[Participation](/v3/repos/statistics/#participation)**
-* **[Punch Card](/v3/repos/statistics/#punch-card)**
+Code code
 
 Enjoy!
