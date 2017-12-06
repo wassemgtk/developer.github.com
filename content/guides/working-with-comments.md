@@ -2,7 +2,6 @@
 title: Working with Comments
 ---
 
-# Working with Comments!
 
 {:toc}
 
