@@ -3,19 +3,7 @@ title: When Does My Rate Limit Reset?
 author_name: jasonrudolph
 ---
 
-Have you ever wondered when your [rate limit][rate-limit-docs] will reset back to its maximum value?
-That information is now available in the new `X-RateLimit-Reset` response header.
 
-``` command-line
-$ curl -I https://api.github.com/orgs/octokit
-
-> HTTP/1.1 200 OK
-> Status: 200 OK
-> X-RateLimit-Limit: 60
-> X-RateLimit-Remaining: 42
-> X-RateLimit-Reset: 1372700873
-> ...
-```
 
 The `X-RateLimit-Reset` header provides a [Unix UTC timestamp][unix-time], letting you know the exact time that your fresh new rate limit kicks in.
 
