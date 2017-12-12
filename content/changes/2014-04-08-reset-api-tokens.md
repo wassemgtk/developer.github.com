@@ -1,7 +1,3 @@
----
-title: "Recommendation: Reset OAuth authorizations"
-author_name: pengwynn
----
 
 As [announced earlier today][heartbleed-blog-post], we are actively responding
 to the recently-disclosed [Heartbleed security
