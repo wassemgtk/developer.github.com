@@ -4,13 +4,6 @@ title: Issue Milestones
 
 # Milestones
 
-{:toc}
-
-## List milestones for a repository
-
-    GET /repos/:owner/:repo/milestones
-
-### Parameters
 
 Name | Type | Description
 -----|------|--------------
