@@ -3,10 +3,6 @@ title: New scopes for managing repository hooks
 author_name: pengwynn
 ---
 
-Many third party services need to set up [hooks][] in order to act upon events
-in your repositories. Today, we've introduced three new [scopes][] that provide
-more granular access to your repository hooks without allowing access to your
-repository contents:
 
 * `read:repo_hook` grants read and ping access to hooks in public or private repositories.
 * `write:repo_hook` grants read, write, and ping access to hooks in public or private repositories.
