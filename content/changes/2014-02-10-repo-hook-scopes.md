@@ -3,7 +3,7 @@ title: New scopes for managing repository hooks
 author_name: pengwynn
 ---
 
-Many third party services need to set up [hooks][] in order to act upon events
+Many third party services need to set up [hooks][] in order to act upon events!
 in your repositories. Today, we've introduced three new [scopes][] that provide
 more granular access to your repository hooks without allowing access to your
 repository contents:
