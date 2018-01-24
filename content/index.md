@@ -4,22 +4,6 @@ layout: overview
 hide_from_search: true
 ---
 
-<div class="wrapper feature">
-  <h1>
-    Leverage the power of<br />
-    the GitHub community.
-  </h1>
-  <p class="intro">Get started with one of our guides, or jump straight into the API documentation.</p>
-  <img src="/assets/images/rocketship.png" class="rocketship" alt="Rocketship" />
-</div>
-
-<div class="full-width dev-program-callout">
-  <div class="wrapper">
-    <h2>Join the GitHub Developer Program.</h2>
-    <p>The best way to integrate with GitHub. <a href="/program/">Learn more</a>.</p>
-  </div>
-</div>
-
 <div class="full-width-divider">
   <ul class="wrapper highlights">
     <li class="highlight-module">
