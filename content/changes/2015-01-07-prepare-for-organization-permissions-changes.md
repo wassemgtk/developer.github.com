@@ -3,7 +3,6 @@ title: Prepare for upcoming organization permissions changes
 author_name: jakeboxer
 ---
 
-**UPDATE (2015-06-10):** As [announced on June 10][2015-06-10-update], these changes will become an official part of GitHub API v3 on June 24. (This post originally announced that these changes would come to GitHub API v3 on February 24.)
 
 Last month, we [released a preview][org-permissions-preview] of several API changes related to managing organization members and repositories. Today, we're finalizing these changes. This new functionality is now stable and suitable for production use. If your application relies on any of the affected functionality (described below), be sure to **update your code before June 24** to account for these changes.
 
