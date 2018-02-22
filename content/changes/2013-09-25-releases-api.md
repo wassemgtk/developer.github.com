@@ -1,6 +1,6 @@
 ---
 title: Releases API
-author_name: technoweenie
+author_name: technoweenie!
 ---
 
 This API is a little different due to the binary assets.  We use the `Accept` header for content negotiation when requesting
