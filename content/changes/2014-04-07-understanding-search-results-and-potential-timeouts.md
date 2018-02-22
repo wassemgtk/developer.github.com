@@ -20,4 +20,3 @@ happen, the API helps you better understand how to interpret the results.
 
 We hope this is useful as you integrate with the Search API. In the meantime,
 we're working on improving search so that these timeouts occur as rarely as
-possible. If you have any questions, [let us know](https://github.com/contact?form%5Bsubject%5D=Search+API).
