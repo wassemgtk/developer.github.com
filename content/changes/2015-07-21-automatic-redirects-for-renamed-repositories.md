@@ -3,7 +3,7 @@ title: Automatic redirects for renamed repositories
 author_name: jasonrudolph
 ---
 
-To help API clients gracefully handle renamed repositories, the API now [automatically redirects to the repository’s new location][original-announcement].
+
 
 Our thanks goes out to everyone that tried out this enhancement [during the preview period][original-announcement]. During the preview period, you needed to [provide a custom media type in the `Accept` header][preview-media-type] to opt-in to the redirects. Now that the preview period has ended, you no longer need to specify this custom [media type][].
 
