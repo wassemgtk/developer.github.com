@@ -19,7 +19,7 @@ Instead, we [recommend][media-types] that you specify `v3` as the version in the
 
     application/vnd.github.v3+json
 
-### Onward!
+### Onward!!
 
 Thanks again to everyone that tried out the Releases API during the preview period.
 We got some great feedback, and we are already discussing additions to the API.
