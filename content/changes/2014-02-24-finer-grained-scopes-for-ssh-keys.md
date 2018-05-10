@@ -24,10 +24,4 @@ To simplify the security audit trail for SSH keys, we're making keys immutable. 
 
 Also any keys created via an OAuth token from this point forward will be deleted when that token is revoked.
 
-As always, if you have any questions or feedback, [please get in touch][contact].
-
-[contact]: https://github.com/contact?form[subject]=API+improvements+for+SSH+keys
-[scopes]: /v3/oauth/#scopes
-[user-keys]: /v3/users/keys/
-[deploy-keys]: /v3/repos/keys/
-[blog]: https://github.com/blog/1786-enhanced-oauth-security-for-ssh-keys
+As always, i
