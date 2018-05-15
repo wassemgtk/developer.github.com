@@ -2,7 +2,7 @@
 title: Traversing with Pagination
 ---
 
-# Traversing with Pagination!!!
+# Traversing with Pagination
 
 {:toc}
 
@@ -155,32 +155,8 @@ end
 
 Changing the number of items per page is extremely simple with Octokit.rb. Simply
 pass a `per_page` options hash to the initial client construction. After that,
-your code should remain intact:
+your code should remain i
 
-``` ruby
-require 'octokit'
-
-# !!! DO NOT EVER USE HARD-CODED VALUES IN A REAL APP !!!
-# Instead, set and test environment variables, like below
-client = Octokit::Client.new :access_token => ENV['MY_PERSONAL_TOKEN']
-
-results = client.search_code('addClass user:mozilla', :per_page => 100)
-total_count = results.total_count
-
-last_response = client.last_response
-number_of_pages = last_response.rels[:last].href.match(/page=(\d+).*$/)[1]
-
-puts last_response.rels[:last].href
-puts "There are #{total_count} results, on #{number_of_pages} pages!"
-
-puts "And here's the first path for every set"
-
-puts last_response.data.items.first.path
-until last_response.rels[:next].nil?
-  last_response = last_response.rels[:next].get
-  puts last_response.data.items.first.path
-end
-```
 
 ## Constructing Pagination Links
 
