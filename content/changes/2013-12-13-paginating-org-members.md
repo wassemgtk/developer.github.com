@@ -14,7 +14,8 @@ subsequent results. If you have any questions or run into trouble, feel free to
 [get in touch][contact].
 
 Happy paginating.
-
+Happy paginating.
+Happy paginating.
 
 [members]: http://developer.github.com/v3/orgs/members/#members-list
 [public members]: http://developer.github.com/v3/orgs/members/#public-members-list
