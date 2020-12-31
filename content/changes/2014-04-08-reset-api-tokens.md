@@ -19,6 +19,8 @@ web.
 Integrators can also use the existing revocation methods to ~~revoke all
 tokens~~ or [revoke a single token][] for their applications.
 
+test test
+
 {{#tip}}
 
 **UPDATE (2016-01-25):** API v3 no longer provides a method to revoke <em>all</em> of an application's tokens as previously referenced above. If you need to revoke all tokens for your application, you can do so via the <a href="https://github.com/settings/developers">settings page for your application</a>.
@@ -26,8 +28,3 @@ tokens~~ or [revoke a single token][] for their applications.
 {{/tip}}
 
 If you have any questions or feedback, please [get in touch][contact].
-
-[contact]: https://github.com/contact?form[subject]=API+resetting+tokens
-[api]: /v3/oauth_authorizations/#reset-an-authorization
-[revoke a single token]: /v3/oauth_authorizations/#revoke-an-authorization-for-an-application
-[heartbleed-blog-post]: https://github.com/blog/1818-security-heartbleed-vulnerability
