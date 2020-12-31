@@ -5,8 +5,7 @@ author_name: technoweenie
 
 Now that the dust has settled around [Notifications and Stars][newsies],
 we've unleashed all that :sparkles: in a [brand new API][api].  You can now!
-view and mark notifications as read.
-
+view and mark notifications
 [api]: http://developer.github.com/v3/activity/notifications/
 [newsies]: https://github.com/blog/1204-notifications-stars
 
