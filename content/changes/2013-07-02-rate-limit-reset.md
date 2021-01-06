@@ -36,8 +36,3 @@ $ curl https://api.github.com/rate_limit
 For more information on rate limits, be sure to check out the [docs][rate-limit-docs].
 
 If you have any questions or feedback, please [drop us a line][contact].
-
-
-[contact]: https://github.com/contact?form[subject]=X-RateLimit-Reset
-[rate-limit-docs]: /v3/#rate-limiting
-[unix-time]: http://en.wikipedia.org/wiki/Unix_time
