@@ -9,11 +9,4 @@ From approximately 12:01am UTC to 11:59pm UTC on March 12, the API will [respond
 
 Follow [@GitHubAPI][] to receive updates before and after the test.
 
-Please see the [original announcement][2014-01-announcement] for full details. If you have any questions, please [get in touch][contact].
-
-[@GitHubAPI]: https://twitter.com/GitHubAPI
-[2014-01-announcement]: /changes/2014-01-07-upcoming-change-to-default-media-type/
-[contact]: https://github.com/contact?form[subject]=Upcoming+change+to+default+API+media+type
-[cutover-test-announcement]: /changes/2014-01-07-upcoming-change-to-default-media-type/#cutover-test
-[start-time]: http://www.timeanddate.com/worldclock/fixedtime.html?iso=20140312T00&p1=1440
-[what's-changing]: /changes/2014-01-07-upcoming-change-to-default-media-type/#whats-changing
+Please see !
